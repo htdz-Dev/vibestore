@@ -1,41 +1,41 @@
 <template>
-  <div>
+  <div class="bg-[#fef6e0] min-h-screen">
     <div class="container-custom py-20">
       <div class="success-card-brutal">
         <div class="success-icon">✓</div>
         
-        <h1 class="success-title">ORDER PLACED!</h1>
+        <h1 class="success-title">{{ $t('orderSuccess.title').toUpperCase() }}</h1>
         
         <p class="success-message">
-          Thank you for your order. We'll process it shortly.
+          {{ $t('orderSuccess.thankYou') }}
         </p>
 
         <div v-if="orderNumber" class="order-number-brutal">
-          <span class="order-label">Order Number:</span>
+          <span class="order-label">{{ $t('orders.orderNumber') }}:</span>
           <span class="order-value">{{ orderNumber }}</span>
         </div>
 
         <div class="success-details">
           <div class="detail-item">
             <span class="detail-icon">📧</span>
-            <span>A confirmation will be sent to your phone</span>
+            <span>{{ $t('orderSuccess.confirmation') }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-icon">📦</span>
-            <span>Estimated delivery: 2-5 business days</span>
+            <span>{{ $t('orderSuccess.delivery') }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-icon">💵</span>
-            <span>{{ isPaid ? 'Payment received!' : 'Payment: Cash on Delivery' }}</span>
+            <span>{{ isPaid ? $t('orderSuccess.paymentReceived') : $t('orderSuccess.paymentCod') }}</span>
           </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
           <NuxtLink to="/shop" class="btn btn-primary">
-            Continue Shopping →
+            {{ $t('cart.continueShopping') }} →
           </NuxtLink>
           <NuxtLink to="/" class="btn btn-secondary">
-            Back to Home
+            {{ $t('common.backToHome') }}
           </NuxtLink>
         </div>
       </div>
@@ -45,14 +45,14 @@
 
 <script setup lang="ts">
 const route = useRoute()
+const { t } = useI18n()
 
 const orderNumber = computed(() => route.query.order as string)
 const isPaid = computed(() => route.query.paid === 'true')
 
-// SEO
 useSeoMeta({
-  title: 'Order Confirmed - VIBE',
-  description: 'Your order has been successfully placed.',
+  title: () => `${t('orderSuccess.title')} - VIBE`,
+  description: () => t('orderSuccess.thankYou'),
 })
 </script>
 
@@ -101,11 +101,22 @@ useSeoMeta({
   font-family: 'Space Mono', monospace;
   font-weight: 700;
   color: #1a1a1a;
+}
+
+[dir="ltr"] .order-value {
   margin-left: 0.5rem;
+}
+
+[dir="rtl"] .order-value {
+  margin-right: 0.5rem;
 }
 
 .success-details {
   @apply space-y-4 text-left max-w-md mx-auto;
+}
+
+[dir="rtl"] .success-details {
+  text-align: right;
 }
 
 .detail-item {

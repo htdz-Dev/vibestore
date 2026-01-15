@@ -1,31 +1,29 @@
 <template>
   <div>
-    <!-- Page header -->
     <div class="container-custom py-12">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
           <h1 class="text-4xl font-bold font-mono">
             <span v-if="selectedCategory">{{ selectedCategory.name }}</span>
             <span v-else-if="searchQuery">🔍 "{{ searchQuery }}"</span>
-            <span v-else>ALL PRODUCTS</span>
+            <span v-else>{{ $t('shop.allProducts').toUpperCase() }}</span>
           </h1>
           <p class="text-[#525252] mt-2">
-            {{ products?.length || 0 }} products found
+            {{ products?.length || 0 }} {{ locale === 'ar' ? 'منتج' : 'products found' }}
           </p>
         </div>
 
-        <!-- Sort -->
         <div class="flex items-center gap-4">
           <select 
             v-model="sortBy"
             class="input font-mono"
           >
-            <option value="created_at-desc">⏰ Newest</option>
-            <option value="created_at-asc">📅 Oldest</option>
-            <option value="price-asc">💰 Price: Low → High</option>
-            <option value="price-desc">💰 Price: High → Low</option>
-            <option value="name-asc">🔤 Name: A→Z</option>
-            <option value="name-desc">🔤 Name: Z→A</option>
+            <option value="created_at-desc">⏰ {{ $t('shop.newest') }}</option>
+            <option value="created_at-asc">📅 {{ locale === 'ar' ? 'الأقدم' : 'Oldest' }}</option>
+            <option value="price-asc">💰 {{ $t('shop.priceLowHigh') }}</option>
+            <option value="price-desc">💰 {{ $t('shop.priceHighLow') }}</option>
+            <option value="name-asc">🔤 {{ locale === 'ar' ? 'الاسم: أ→ي' : 'Name: A→Z' }}</option>
+            <option value="name-desc">🔤 {{ locale === 'ar' ? 'الاسم: ي→أ' : 'Name: Z→A' }}</option>
           </select>
         </div>
       </div>
@@ -33,10 +31,9 @@
 
     <div class="container-custom pb-16">
       <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Sidebar filters -->
         <aside class="lg:w-72 flex-shrink-0">
           <div class="filter-sidebar sticky top-28">
-            <h3 class="font-bold font-mono text-lg mb-4">📁 CATEGORIES</h3>
+            <h3 class="font-bold font-mono text-lg mb-4">📁 {{ $t('home.categories').toUpperCase() }}</h3>
             <ul class="space-y-2">
               <li>
                 <NuxtLink 
@@ -46,7 +43,7 @@
                     !route.query.category ? 'active' : ''
                   ]"
                 >
-                  All Products
+                  {{ $t('shop.allProducts') }}
                 </NuxtLink>
               </li>
               <li v-for="cat in categories" :key="cat.slug">
@@ -63,18 +60,16 @@
               </li>
             </ul>
 
-            <!-- Clear filters -->
             <button 
               v-if="route.query.category || route.query.search"
               @click="clearFilters"
               class="mt-6 w-full btn-clear"
             >
-              ✕ Clear filters
+              ✕ {{ $t('shop.clearFilters') }}
             </button>
           </div>
         </aside>
 
-        <!-- Products grid -->
         <div class="flex-grow">
           <div v-if="pending" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             <div v-for="i in 6" :key="i" class="product-skeleton">
@@ -97,14 +92,13 @@
 
           <div v-else class="empty-state">
             <span class="text-6xl mb-4">😔</span>
-            <h3 class="text-xl font-bold mb-2">No products found</h3>
-            <p class="text-[#525252] mb-6">Try adjusting your filters or search terms</p>
+            <h3 class="text-xl font-bold mb-2">{{ $t('shop.noProducts') }}</h3>
+            <p class="text-[#525252] mb-6">{{ locale === 'ar' ? 'حاول تعديل الفلاتر أو كلمات البحث' : 'Try adjusting your filters or search terms' }}</p>
             <NuxtLink to="/shop" class="btn btn-primary">
-              View All Products →
+              {{ $t('common.viewAll') }} →
             </NuxtLink>
           </div>
 
-          <!-- Pagination -->
           <div v-if="totalPages > 1" class="mt-12 flex justify-center gap-2">
             <button 
               v-for="page in totalPages" 
@@ -128,11 +122,11 @@
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const { locale, t } = useI18n()
 
 const sortBy = ref('created_at-desc')
 const currentPage = ref(1)
 
-// Build API URL based on filters
 const apiUrl = computed(() => {
   const params = new URLSearchParams()
   
@@ -151,7 +145,6 @@ const apiUrl = computed(() => {
   return `${config.public.apiBase}/products?${params.toString()}`
 })
 
-// Fetch products
 const { data: productsData, pending, refresh } = await useFetch<any>(apiUrl, {
   lazy: true,
   server: false,
@@ -162,7 +155,6 @@ const products = computed(() => productsData.value?.data || [])
 const totalPages = computed(() => productsData.value?.last_page || 1)
 const searchQuery = computed(() => route.query.search as string)
 
-// Fetch categories
 const { data: categoriesData } = await useFetch<{ data: any[] }>(`${config.public.apiBase}/categories`, {
   lazy: true,
   server: false,
@@ -184,25 +176,22 @@ const goToPage = (page: number) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-// Watch for route changes
 watch(() => route.query, () => {
   currentPage.value = 1
   refresh()
 }, { deep: true })
 
-// Watch sort changes
 watch(sortBy, () => {
   currentPage.value = 1
 })
 
-// SEO
 useSeoMeta({
   title: () => selectedCategory.value 
     ? `${selectedCategory.value.name} - VIBE` 
     : searchQuery.value 
-      ? `Search: ${searchQuery.value} - VIBE`
-      : 'Shop - VIBE',
-  description: 'Browse our collection of premium streetwear. Hoodies, t-shirts, and more.',
+      ? `${t('common.search')}: ${searchQuery.value} - VIBE`
+      : `${t('nav.shop')} - VIBE`,
+  description: () => t('home.heroDescription'),
 })
 </script>
 

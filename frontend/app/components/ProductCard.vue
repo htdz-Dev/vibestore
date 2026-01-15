@@ -3,7 +3,6 @@
     :to="`/shop/${product.slug}`"
     class="product-card-brutal group cursor-pointer block"
   >
-    <!-- Image container -->
     <div class="product-image-brutal">
       <img 
         v-if="primaryImage"
@@ -17,43 +16,36 @@
         </svg>
       </div>
 
-      <!-- Featured badge -->
       <div 
         v-if="product.is_featured"
         class="featured-badge-brutal"
       >
-        ★ HOT
+        ★ {{ $t('product.hot') }}
       </div>
 
-      <!-- Quick add button -->
       <div class="quick-add-brutal">
         <button 
           @click.prevent="quickAdd"
           class="btn btn-primary w-full"
         >
-          + Add to Cart
+          + {{ $t('product.addToCart') }}
         </button>
       </div>
     </div>
 
-    <!-- Product info -->
     <div class="p-4 bg-white">
-      <!-- Category -->
       <p v-if="product.category" class="product-category-brutal">
         {{ product.category.name }}
       </p>
 
-      <!-- Name -->
       <h3 class="product-name-brutal">
         {{ product.name }}
       </h3>
 
-      <!-- Price -->
       <div class="product-price-brutal">
-        {{ formatPrice(product.price) }} DA
+        {{ formatPrice(product.price) }} {{ $t('common.currency') }}
       </div>
 
-      <!-- Variants info -->
       <div v-if="product.variants?.length > 0" class="mt-3 flex flex-wrap gap-2">
         <span 
           v-for="size in availableSizes" 

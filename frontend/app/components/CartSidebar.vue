@@ -4,17 +4,14 @@
       v-if="cartStore.isOpen" 
       class="fixed inset-0 z-50"
     >
-      <!-- Backdrop -->
       <div 
         class="absolute inset-0 bg-black/50"
         @click="cartStore.closeCart"
       ></div>
 
-      <!-- Sidebar -->
       <div class="cart-sidebar-brutal">
-        <!-- Header -->
         <div class="cart-header-brutal">
-          <h2 class="cart-title-brutal">YOUR CART</h2>
+          <h2 class="cart-title-brutal">{{ $t('cart.title').toUpperCase() }}</h2>
           <button 
             @click="cartStore.closeCart"
             class="cart-close-brutal"
@@ -23,16 +20,15 @@
           </button>
         </div>
 
-        <!-- Cart items -->
         <div class="flex-grow overflow-y-auto p-6">
           <div v-if="cartStore.items.length === 0" class="text-center py-12">
             <div class="empty-icon-brutal">🛒</div>
-            <p class="text-[#525252] mt-4 font-bold">Your cart is empty</p>
+            <p class="text-[#525252] mt-4 font-bold">{{ $t('cart.empty') }}</p>
             <button 
               @click="cartStore.closeCart"
               class="btn btn-secondary mt-6"
             >
-              Continue Shopping
+              {{ $t('cart.continueShopping') }}
             </button>
           </div>
 
@@ -42,7 +38,6 @@
               :key="item.id"
               class="cart-item-brutal"
             >
-              <!-- Product image -->
               <div class="cart-item-image-brutal">
                 <img 
                   v-if="item.image"
@@ -55,17 +50,15 @@
                 </div>
               </div>
 
-              <!-- Item details -->
               <div class="flex-grow min-w-0">
                 <h4 class="font-bold text-[#1a1a1a] truncate">{{ item.name }}</h4>
                 <p v-if="item.variant" class="text-sm text-[#525252] mt-1">
                   {{ item.variant }}
                 </p>
                 <p class="font-bold text-[#ff5c00] mt-2 font-mono">
-                  {{ formatPrice(item.price) }} DA
+                  {{ formatPrice(item.price) }} {{ $t('common.currency') }}
                 </p>
                 
-                <!-- Quantity controls -->
                 <div class="flex items-center gap-2 mt-3">
                   <button 
                     @click="cartStore.decreaseQuantity(item.id)"
@@ -83,7 +76,6 @@
                 </div>
               </div>
 
-              <!-- Remove button -->
               <button 
                 @click="cartStore.removeItem(item.id)"
                 class="remove-btn-brutal"
@@ -94,27 +86,26 @@
           </div>
         </div>
 
-        <!-- Footer -->
         <div v-if="cartStore.items.length > 0" class="cart-footer-brutal">
           <div class="flex justify-between text-lg mb-2">
-            <span class="font-bold">SUBTOTAL</span>
-            <span class="font-bold font-mono">{{ formatPrice(cartStore.totalPrice) }} DA</span>
+            <span class="font-bold">{{ $t('cart.subtotal').toUpperCase() }}</span>
+            <span class="font-bold font-mono">{{ formatPrice(cartStore.totalPrice) }} {{ $t('common.currency') }}</span>
           </div>
           <p class="text-sm text-[#525252] mb-4">
-            Shipping calculated at checkout
+            {{ $t('cart.shipping') }}
           </p>
           <NuxtLink 
             to="/checkout"
             @click="cartStore.closeCart"
             class="btn btn-primary w-full text-center block"
           >
-            Checkout →
+            {{ $t('cart.checkout') }} →
           </NuxtLink>
           <button 
             @click="cartStore.closeCart"
             class="btn btn-ghost w-full mt-2"
           >
-            Continue Shopping
+            {{ $t('cart.continueShopping') }}
           </button>
         </div>
       </div>
@@ -126,9 +117,10 @@
 import { useCartStore } from '~/stores/cart'
 
 const cartStore = useCartStore()
+const { locale } = useI18n()
 
 const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('fr-DZ').format(price)
+  return new Intl.NumberFormat(locale.value === 'ar' ? 'ar-DZ' : 'fr-DZ').format(price)
 }
 </script>
 

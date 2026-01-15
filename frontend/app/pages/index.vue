@@ -1,32 +1,29 @@
 <template>
   <div>
-    <!-- Hero Section -->
     <section class="hero-brutal">
       <div class="container-custom py-20">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
-          <!-- Content -->
           <div>
             <div class="sticker-brutal mb-6">
-              ★ NEW COLLECTION 2026
+              ★ {{ $t('home.newArrivals').toUpperCase() }} 2026
             </div>
             <h1 class="hero-title-brutal">
-              ELEVATE YOUR
-              <span class="hero-accent">STREET STYLE</span>
+              {{ $t('home.heroTitle') }}
+              <span class="hero-accent">{{ $t('home.heroSubtitle') }}</span>
             </h1>
             <p class="text-[#525252] text-xl mb-8 max-w-lg leading-relaxed">
-              Premium quality streetwear designed for those who dare to stand out. Express your unique style with VIBE.
+              {{ $t('home.heroDescription') }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
               <NuxtLink to="/shop" class="btn btn-primary text-lg px-8 py-4">
-                Shop Now →
+                {{ $t('home.shopNow') }} →
               </NuxtLink>
               <NuxtLink to="/about" class="btn btn-secondary text-lg px-8 py-4">
-                Our Story
+                {{ $t('about.story') }}
               </NuxtLink>
             </div>
           </div>
 
-          <!-- Hero visual -->
           <div class="hidden lg:block">
             <div class="hero-visual-brutal">
               <div class="hero-box box-1">VIBE</div>
@@ -38,15 +35,14 @@
       </div>
     </section>
 
-    <!-- Featured Products Section -->
     <section class="section-brutal">
       <div class="container-custom">
         <div class="section-header-brutal">
           <h2 class="section-title-brutal">
-            FEATURED <span class="text-[#ff5c00]">PRODUCTS</span>
+            {{ $t('home.featuredProducts').toUpperCase() }}
           </h2>
           <p class="text-[#525252] text-lg">
-            Discover our most popular pieces.
+            {{ $t('shop.noProducts') === 'No products found' ? 'Discover our most popular pieces.' : '' }}
           </p>
         </div>
 
@@ -70,23 +66,22 @@
         </div>
 
         <div v-else class="text-center py-12">
-          <p class="text-[#525252]">No featured products at the moment.</p>
+          <p class="text-[#525252]">{{ $t('shop.noProducts') }}</p>
         </div>
 
         <div class="text-center mt-12">
           <NuxtLink to="/shop" class="btn btn-secondary">
-            View All Products →
+            {{ $t('common.viewAll') }} →
           </NuxtLink>
         </div>
       </div>
     </section>
 
-    <!-- Categories Section -->
     <section class="py-20 bg-white border-y-3 border-[#1a1a1a]">
       <div class="container-custom">
         <div class="section-header-brutal">
           <h2 class="section-title-brutal">
-            SHOP BY <span class="text-[#7c3aed]">CATEGORY</span>
+            {{ $t('home.categories').toUpperCase() }}
           </h2>
         </div>
 
@@ -100,58 +95,56 @@
           >
             <img :src="getCategoryIcon(index)" class="category-icon-img" alt="Category Icon" />
             <h3 class="category-name-brutal">{{ category.name }}</h3>
-            <p class="text-sm text-[#525252]">{{ category.products_count || 0 }} Products</p>
+            <p class="text-sm text-[#525252]">{{ category.products_count || 0 }} {{ $t('shop.allProducts') === 'All Products' ? 'Products' : 'منتجات' }}</p>
             <span class="category-arrow">→</span>
           </NuxtLink>
         </div>
       </div>
     </section>
 
-    <!-- Features Section -->
     <section class="section-brutal">
       <div class="container-custom">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="feature-card-brutal feature-card-1">
             <span class="feature-icon-brutal">📦</span>
-            <h3 class="feature-title-brutal">FREE SHIPPING</h3>
-            <p class="text-[#525252]">Free delivery on all orders across Algeria</p>
+            <h3 class="feature-title-brutal">{{ $t('cart.freeShipping').toUpperCase() }}</h3>
+            <p class="text-[#525252]">{{ locale === 'ar' ? 'توصيل مجاني لجميع الطلبات في الجزائر' : 'Free delivery on all orders across Algeria' }}</p>
           </div>
           
           <div class="feature-card-brutal feature-card-2">
             <span class="feature-icon-brutal">⭐</span>
-            <h3 class="feature-title-brutal">PREMIUM QUALITY</h3>
-            <p class="text-[#525252]">Carefully selected materials for lasting comfort</p>
+            <h3 class="feature-title-brutal">{{ locale === 'ar' ? 'جودة عالية' : 'PREMIUM QUALITY' }}</h3>
+            <p class="text-[#525252]">{{ locale === 'ar' ? 'مواد مختارة بعناية للراحة الدائمة' : 'Carefully selected materials for lasting comfort' }}</p>
           </div>
           
           <div class="feature-card-brutal feature-card-3">
             <span class="feature-icon-brutal">💵</span>
-            <h3 class="feature-title-brutal">CASH ON DELIVERY</h3>
-            <p class="text-[#525252]">Pay when you receive your order</p>
+            <h3 class="feature-title-brutal">{{ $t('checkout.cod').toUpperCase() }}</h3>
+            <p class="text-[#525252]">{{ locale === 'ar' ? 'ادفع عند استلام طلبك' : 'Pay when you receive your order' }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Newsletter Section -->
     <section class="py-20 bg-[#facc15] border-y-3 border-[#1a1a1a]">
       <div class="container-custom">
         <div class="newsletter-brutal">
           <h2 class="newsletter-title-brutal">
-            JOIN THE VIBE COMMUNITY
+            {{ locale === 'ar' ? 'انضم إلى مجتمع VIBE' : 'JOIN THE VIBE COMMUNITY' }}
           </h2>
           <p class="text-[#525252] mb-8 text-lg">
-            Subscribe to our newsletter and be the first to know about new drops.
+            {{ $t('footer.newsletterText') }}
           </p>
           <form @submit.prevent="subscribe" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
             <input 
               v-model="email"
               type="email" 
-              placeholder="Enter your email"
+              :placeholder="locale === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'"
               class="input flex-grow"
               required
             />
             <button type="submit" class="btn btn-primary whitespace-nowrap">
-              Subscribe →
+              {{ $t('footer.subscribe') }} →
             </button>
           </form>
         </div>
@@ -163,8 +156,8 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const email = ref('')
+const { locale, t } = useI18n()
 
-// Fetch featured products
 const { data: featuredData, pending } = await useFetch<{ data: any[] }>(`${config.public.apiBase}/products/featured`, {
   lazy: true,
   server: false,
@@ -172,7 +165,6 @@ const { data: featuredData, pending } = await useFetch<{ data: any[] }>(`${confi
 
 const featuredProducts = computed(() => featuredData.value?.data || [])
 
-// Fetch categories
 const { data: categoriesData } = await useFetch<{ data: any[] }>(`${config.public.apiBase}/categories`, {
   lazy: true,
   server: false,
@@ -186,7 +178,6 @@ const getCategoryColor = (index: number) => {
 }
 
 const getCategoryIcon = (index: number) => {
-  // Use PNG images from storage instead of emojis
   const icons = [
     'products/h.png',
     'products/t.png', 
@@ -197,14 +188,13 @@ const getCategoryIcon = (index: number) => {
 }
 
 const subscribe = () => {
-  alert(`Subscribed with: ${email.value}`)
+  alert(locale.value === 'ar' ? `تم الاشتراك: ${email.value}` : `Subscribed with: ${email.value}`)
   email.value = ''
 }
 
-// SEO
 useSeoMeta({
-  title: 'VIBE - Premium Streetwear Collection',
-  description: 'Discover the latest streetwear trends. Premium quality clothing for the urban lifestyle.',
+  title: () => `VIBE - ${t('home.heroSubtitle')}`,
+  description: () => t('home.heroDescription'),
 })
 </script>
 
@@ -359,8 +349,18 @@ useSeoMeta({
   transition: transform 0.15s ease;
 }
 
+[dir="rtl"] .category-arrow {
+  right: auto;
+  left: 1.5rem;
+  transform: rotate(180deg);
+}
+
 .category-card-brutal:hover .category-arrow {
   transform: translateX(5px);
+}
+
+[dir="rtl"] .category-card-brutal:hover .category-arrow {
+  transform: translateX(-5px) rotate(180deg);
 }
 
 .feature-card-brutal {

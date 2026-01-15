@@ -12,38 +12,52 @@ export interface User {
 }
 
 interface AuthState {
-    user: User | null
-    token: string | null
     isLoading: boolean
 }
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
-        user: null,
-        token: null,
         isLoading: false,
     }),
 
     getters: {
-        isAuthenticated: (state) => !!state.token && !!state.user,
-        isAdmin: (state) => state.user?.is_admin ?? false,
+        // Use nuxt-auth composable for auth state
+        user(): User | null {
+            if (import.meta.client) {
+                const { data } = useAuth()
+                return data.value as User | null
+            }
+            return null
+        },
+
+        token(): string | null {
+            if (import.meta.client) {
+                const { token } = useAuth()
+                return token.value
+            }
+            return null
+        },
+
+        isAuthenticated(): boolean {
+            if (import.meta.client) {
+                const { status } = useAuth()
+                return status.value === 'authenticated'
+            }
+            return false
+        },
+
+        isAdmin(): boolean {
+            return this.user?.is_admin ?? false
+        },
     },
 
     actions: {
         async register(data: { name: string; email: string; password: string; password_confirmation: string; phone?: string }) {
-            const config = useRuntimeConfig()
             this.isLoading = true
 
             try {
-                const response = await $fetch<{ user: User; token: string }>(`${config.public.apiBase}/register`, {
-                    method: 'POST',
-                    body: data,
-                })
-
-                this.user = response.user
-                this.token = response.token
-                this.saveToStorage()
-
+                const { signUp } = useAuth()
+                await signUp(data, { callbackUrl: '/' })
                 return { success: true }
             } catch (error: any) {
                 return {
@@ -56,19 +70,11 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async login(email: string, password: string) {
-            const config = useRuntimeConfig()
             this.isLoading = true
 
             try {
-                const response = await $fetch<{ user: User; token: string }>(`${config.public.apiBase}/login`, {
-                    method: 'POST',
-                    body: { email, password },
-                })
-
-                this.user = response.user
-                this.token = response.token
-                this.saveToStorage()
-
+                const { signIn } = useAuth()
+                await signIn({ email, password }, { callbackUrl: '/' })
                 return { success: true }
             } catch (error: any) {
                 return {
@@ -81,101 +87,48 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async logout() {
-            const config = useRuntimeConfig()
-
-            if (this.token) {
-                try {
-                    await $fetch(`${config.public.apiBase}/logout`, {
-                        method: 'POST',
-                        headers: {
-                            Authorization: `Bearer ${this.token}`,
-                        },
-                    })
-                } catch (e) {
-                    // Ignore logout errors
-                }
+            try {
+                const { signOut } = useAuth()
+                await signOut({ callbackUrl: '/' })
+            } catch (e) {
+                // Ignore logout errors
             }
-
-            this.user = null
-            this.token = null
-            this.clearStorage()
         },
 
         async fetchUser() {
-            const config = useRuntimeConfig()
-
-            if (!this.token) return
-
             try {
-                const response = await $fetch<{ user: User }>(`${config.public.apiBase}/user`, {
-                    headers: {
-                        Authorization: `Bearer ${this.token}`,
-                    },
-                })
-
-                this.user = response.user
+                const { getSession } = useAuth()
+                await getSession()
             } catch (e) {
-                this.logout()
+                // Session fetch failed
             }
         },
 
         async updateProfile(data: Partial<User>) {
             const config = useRuntimeConfig()
+            const { token } = useAuth()
 
-            if (!this.token) return { success: false, error: 'Not authenticated' }
+            if (!token.value) return { success: false, error: 'Not authenticated' }
 
             try {
                 const response = await $fetch<{ user: User }>(`${config.public.apiBase}/user/profile`, {
                     method: 'PUT',
                     headers: {
-                        Authorization: `Bearer ${this.token}`,
+                        Authorization: `Bearer ${token.value}`,
                     },
                     body: data,
                 })
 
-                this.user = response.user
+                // Refresh session to get updated user data
+                const { getSession } = useAuth()
+                await getSession()
+
                 return { success: true }
             } catch (error: any) {
                 return {
                     success: false,
                     error: error.data?.message || 'Update failed'
                 }
-            }
-        },
-
-        saveToStorage() {
-            if (import.meta.client) {
-                if (this.token) {
-                    localStorage.setItem('auth_token', this.token)
-                }
-                if (this.user) {
-                    localStorage.setItem('auth_user', JSON.stringify(this.user))
-                }
-            }
-        },
-
-        loadFromStorage() {
-            if (import.meta.client) {
-                const token = localStorage.getItem('auth_token')
-                const user = localStorage.getItem('auth_user')
-
-                if (token) {
-                    this.token = token
-                }
-                if (user) {
-                    try {
-                        this.user = JSON.parse(user)
-                    } catch (e) {
-                        this.user = null
-                    }
-                }
-            }
-        },
-
-        clearStorage() {
-            if (import.meta.client) {
-                localStorage.removeItem('auth_token')
-                localStorage.removeItem('auth_user')
             }
         },
     },

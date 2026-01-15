@@ -1,35 +1,33 @@
 <template>
-  <div>
-    <!-- Hero -->
+  <div class="bg-[#fef6e0]">
     <section class="hero-about-brutal">
       <div class="container-custom text-center">
-        <div class="sticker-brutal-large">✦ EST. 2024 ✦</div>
+        <div class="sticker-brutal-large">✦ {{ locale === 'ar' ? 'تأسست' : 'EST.' }} 2024 ✦</div>
         <h1 class="hero-title-about">
-          ABOUT <span class="text-[#ff5c00]">VIBE</span>
+          {{ $t('about.title') }} <span class="text-[#ff5c00]">VIBE</span>
         </h1>
         <p class="text-xl text-[#525252] max-w-2xl mx-auto">
-          Premium streetwear for those who dare to stand out
+          {{ $t('about.subtitle') }}
         </p>
       </div>
     </section>
 
-    <!-- Story -->
     <section class="py-20 bg-white border-y-3 border-[#1a1a1a]">
       <div class="container-custom">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 class="section-title-brutal mb-6">
-              OUR <span class="text-[#ff5c00]">STORY</span>
+              {{ locale === 'ar' ? 'قصتنا' : 'OUR' }} <span class="text-[#ff5c00]">{{ locale === 'ar' ? '' : 'STORY' }}</span>
             </h2>
             <div class="space-y-4 text-[#525252] leading-relaxed text-lg">
               <p>
-                <strong class="text-[#1a1a1a]">VIBE was born from a passion for self-expression through fashion.</strong> We believe that what you wear is a statement about who you are and what you stand for.
+                <strong class="text-[#1a1a1a]">{{ $t('about.storyIntro') }}</strong>
               </p>
               <p>
-                Founded in <span class="highlight-brutal">Algeria</span>, we set out to create a brand that combines premium quality with bold, urban designs. Every piece in our collection is carefully crafted to help you express your unique style.
+                {{ $t('about.storyBody') }}
               </p>
               <p>
-                Our mission is simple: to provide streetwear that makes you feel confident, comfortable, and <span class="highlight-brutal-alt">unapologetically yourself</span>.
+                {{ $t('about.mission') }}
               </p>
             </div>
           </div>
@@ -37,7 +35,7 @@
             <div class="story-image-brutal">
               <div class="story-image-placeholder">
                 <span class="text-6xl">👕</span>
-                <p class="mt-4 font-bold">PREMIUM QUALITY</p>
+                <p class="mt-4 font-bold">{{ locale === 'ar' ? 'جودة عالية' : 'PREMIUM QUALITY' }}</p>
               </div>
             </div>
           </div>
@@ -45,78 +43,75 @@
       </div>
     </section>
 
-    <!-- Values -->
     <section class="py-20 bg-[#fffef0]">
       <div class="container-custom">
         <div class="text-center mb-16">
           <h2 class="section-title-brutal">
-            WHAT WE <span class="text-[#7c3aed]">STAND FOR</span>
+            {{ $t('about.values') }}
           </h2>
         </div>
 
         <div class="grid md:grid-cols-3 gap-6">
           <div class="value-card-brutal value-card-1">
             <span class="value-icon">🛡️</span>
-            <h3 class="value-title-brutal">QUALITY FIRST</h3>
+            <h3 class="value-title-brutal">{{ $t('about.qualityFirst') }}</h3>
             <p class="text-[#525252]">
-              We never compromise on quality. Every piece is made with premium materials for lasting comfort and durability.
+              {{ $t('about.qualityDesc') }}
             </p>
           </div>
 
           <div class="value-card-brutal value-card-2">
             <span class="value-icon">⭐</span>
-            <h3 class="value-title-brutal">UNIQUE DESIGNS</h3>
+            <h3 class="value-title-brutal">{{ $t('about.uniqueDesigns') }}</h3>
             <p class="text-[#525252]">
-              Our designs are bold, original, and made for those who want to stand out from the crowd.
+              {{ $t('about.uniqueDesc') }}
             </p>
           </div>
 
           <div class="value-card-brutal value-card-3">
             <span class="value-icon">🤝</span>
-            <h3 class="value-title-brutal">COMMUNITY</h3>
+            <h3 class="value-title-brutal">{{ $t('about.community') }}</h3>
             <p class="text-[#525252]">
-              We're building more than a brand – we're building a community of individuals who share our passion.
+              {{ $t('about.communityDesc') }}
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Stats -->
     <section class="py-16 bg-[#facc15] border-y-3 border-[#1a1a1a]">
       <div class="container-custom">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div class="stat-brutal">
             <span class="stat-number">500+</span>
-            <span class="stat-label">Happy Customers</span>
+            <span class="stat-label">{{ $t('about.happyCustomers') }}</span>
           </div>
           <div class="stat-brutal">
             <span class="stat-number">50+</span>
-            <span class="stat-label">Products</span>
+            <span class="stat-label">{{ $t('about.products') }}</span>
           </div>
           <div class="stat-brutal">
             <span class="stat-number">48</span>
-            <span class="stat-label">Wilayas Covered</span>
+            <span class="stat-label">{{ $t('about.wilayasCovered') }}</span>
           </div>
           <div class="stat-brutal">
             <span class="stat-number">100%</span>
-            <span class="stat-label">Satisfaction</span>
+            <span class="stat-label">{{ $t('about.satisfaction') }}</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
     <section class="py-20 bg-white">
       <div class="container-custom text-center">
         <h2 class="section-title-brutal mb-6">
-          READY TO JOIN THE <span class="text-[#ff5c00]">MOVEMENT</span>?
+          {{ $t('about.joinMovement') }}
         </h2>
         <p class="text-xl text-[#525252] mb-8 max-w-2xl mx-auto">
-          Explore our collection and find pieces that speak to your style.
+          {{ $t('about.exploreCollection') }}
         </p>
         <NuxtLink to="/shop" class="btn btn-primary text-lg px-10 py-4">
-          Shop Now →
+          {{ $t('home.shopNow') }} →
         </NuxtLink>
       </div>
     </section>
@@ -124,10 +119,11 @@
 </template>
 
 <script setup lang="ts">
-// SEO
+const { locale, t } = useI18n()
+
 useSeoMeta({
-  title: 'About Us - VIBE',
-  description: 'Learn about VIBE - Premium streetwear brand from Algeria. Quality, style, and community.',
+  title: () => `${t('about.title')} - VIBE`,
+  description: () => t('about.subtitle'),
 })
 </script>
 
@@ -170,21 +166,6 @@ useSeoMeta({
   font-weight: 700;
   font-size: 2.5rem;
   color: #1a1a1a;
-}
-
-.highlight-brutal {
-  background: #facc15;
-  padding: 0.125rem 0.5rem;
-  border: 2px solid #1a1a1a;
-  font-weight: 700;
-}
-
-.highlight-brutal-alt {
-  background: #ff5c00;
-  color: white;
-  padding: 0.125rem 0.5rem;
-  border: 2px solid #1a1a1a;
-  font-weight: 700;
 }
 
 .story-image-brutal {

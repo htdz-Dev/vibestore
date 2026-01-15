@@ -2,15 +2,14 @@
   <footer class="footer-brutal mt-auto">
     <div class="container-custom py-16">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <!-- Brand -->
         <div class="md:col-span-2">
           <NuxtLink to="/" class="logo-brutal inline-block mb-6">
             VIBE
           </NuxtLink>
           <p class="text-[#525252] mb-6 max-w-md leading-relaxed">
-            Premium streetwear for the urban lifestyle. Express yourself with our carefully curated collection of hoodies, t-shirts, and accessories.
+            {{ $t('footer.description') }}
           </p>
-          <div class="flex space-x-3">
+          <div class="flex gap-3">
             <a href="#" class="social-btn-brutal">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
@@ -29,55 +28,53 @@
           </div>
         </div>
 
-        <!-- Quick Links -->
         <div>
-          <h4 class="footer-heading">Quick Links</h4>
+          <h4 class="footer-heading">{{ $t('footer.quickLinks') }}</h4>
           <ul class="space-y-3">
             <li>
               <NuxtLink to="/shop" class="footer-link">
-                Shop All →
+                {{ $t('nav.shop') }} →
               </NuxtLink>
             </li>
             <li>
               <NuxtLink to="/shop?category=hoodies" class="footer-link">
-                Hoodies →
+                {{ locale === 'ar' ? 'هوديز' : 'Hoodies' }} →
               </NuxtLink>
             </li>
             <li>
               <NuxtLink to="/shop?category=t-shirts" class="footer-link">
-                T-Shirts →
+                {{ locale === 'ar' ? 'تيشيرتات' : 'T-Shirts' }} →
               </NuxtLink>
             </li>
             <li>
               <NuxtLink to="/about" class="footer-link">
-                About Us →
+                {{ $t('nav.about') }} →
               </NuxtLink>
             </li>
           </ul>
         </div>
 
-        <!-- Customer Service -->
         <div>
-          <h4 class="footer-heading">Help</h4>
+          <h4 class="footer-heading">{{ $t('footer.customerService') }}</h4>
           <ul class="space-y-3">
             <li>
               <NuxtLink to="/contact" class="footer-link">
-                Contact Us →
+                {{ $t('nav.contact') }} →
               </NuxtLink>
             </li>
             <li>
               <a href="#" class="footer-link">
-                Shipping Info →
+                {{ $t('footer.shippingPolicy') }} →
               </a>
             </li>
             <li>
               <a href="#" class="footer-link">
-                Returns →
+                {{ $t('footer.returns') }} →
               </a>
             </li>
             <li>
               <a href="#" class="footer-link">
-                Size Guide →
+                {{ $t('footer.faq') }} →
               </a>
             </li>
           </ul>
@@ -85,18 +82,17 @@
       </div>
     </div>
 
-    <!-- Bottom bar -->
     <div class="footer-bottom">
       <div class="container-custom py-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <p class="font-bold">
-          © {{ currentYear }} VIBE. ALL RIGHTS RESERVED.
+          © {{ currentYear }} VIBE. {{ $t('footer.allRightsReserved').toUpperCase() }}.
         </p>
-        <div class="flex items-center space-x-6">
+        <div class="flex items-center gap-6">
           <a href="#" class="footer-link text-sm">
-            Privacy
+            {{ $t('footer.privacyPolicy') }}
           </a>
           <a href="#" class="footer-link text-sm">
-            Terms
+            {{ $t('footer.termsOfService') }}
           </a>
         </div>
       </div>
@@ -105,6 +101,7 @@
 </template>
 
 <script setup lang="ts">
+const { locale } = useI18n()
 const currentYear = new Date().getFullYear()
 </script>
 
@@ -140,6 +137,14 @@ const currentYear = new Date().getFullYear()
 
 .footer-link:hover {
   color: #ff5c00;
+}
+
+[dir="rtl"] .footer-link:hover {
+  padding-right: 4px;
+  padding-left: 0;
+}
+
+[dir="ltr"] .footer-link:hover {
   padding-left: 4px;
 }
 

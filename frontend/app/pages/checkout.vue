@@ -1,44 +1,41 @@
 <template>
-  <div>
+  <div class="bg-[#fef6e0] min-h-screen">
     <div class="container-custom py-12">
-      <!-- Error banner -->
       <div v-if="route.query.error || error" class="error-banner-brutal mb-8">
         <span class="error-icon">⚠️</span>
-        <span>{{ error || 'Payment failed. Please try again.' }}</span>
+        <span>{{ error || $t('checkout.paymentFailed') }}</span>
       </div>
 
-      <h1 class="page-title-brutal">CHECKOUT</h1>
+      <h1 class="page-title-brutal">{{ $t('checkout.title').toUpperCase() }}</h1>
 
       <div v-if="cartStore.isEmpty" class="empty-cart-brutal">
         <span class="empty-icon">🛒</span>
-        <h2 class="text-xl font-bold mb-4">Your cart is empty</h2>
+        <h2 class="text-xl font-bold mb-4 text-[#1a1a1a]">{{ $t('cart.empty') }}</h2>
         <NuxtLink to="/shop" class="btn btn-primary">
-          Continue Shopping →
+          {{ $t('cart.continueShopping') }} →
         </NuxtLink>
       </div>
 
       <div v-else class="grid lg:grid-cols-3 gap-8">
-        <!-- Checkout form -->
         <div class="lg:col-span-2">
           <form @submit.prevent="placeOrder" class="space-y-6">
-            <!-- Shipping Information -->
             <div class="section-brutal">
-              <h2 class="section-heading-brutal">📦 SHIPPING INFO</h2>
+              <h2 class="section-heading-brutal">📦 {{ $t('checkout.shippingInfo').toUpperCase() }}</h2>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
-                  <label class="label-brutal">Full Name *</label>
+                  <label class="label-brutal">{{ $t('auth.name') }} *</label>
                   <input 
                     v-model="form.shipping_name"
                     type="text"
                     class="input"
-                    placeholder="Enter your full name"
+                    :placeholder="$t('auth.name')"
                     required
                   />
                 </div>
 
                 <div>
-                  <label class="label-brutal">Phone Number *</label>
+                  <label class="label-brutal">{{ $t('checkout.phone') }} *</label>
                   <input 
                     v-model="form.shipping_phone"
                     type="tel"
@@ -49,13 +46,13 @@
                 </div>
 
                 <div>
-                  <label class="label-brutal">Wilaya *</label>
+                  <label class="label-brutal">{{ $t('checkout.wilaya') }} *</label>
                   <select 
                     v-model="form.shipping_wilaya"
                     class="input"
                     required
                   >
-                    <option value="">Select Wilaya</option>
+                    <option value="">{{ $t('checkout.selectWilaya') }}</option>
                     <option v-for="wilaya in wilayas" :key="wilaya" :value="wilaya">
                       {{ wilaya }}
                     </option>
@@ -63,18 +60,18 @@
                 </div>
 
                 <div>
-                  <label class="label-brutal">City *</label>
+                  <label class="label-brutal">{{ $t('checkout.city') }} *</label>
                   <input 
                     v-model="form.shipping_city"
                     type="text"
                     class="input"
-                    placeholder="Enter your city"
+                    :placeholder="$t('checkout.city')"
                     required
                   />
                 </div>
 
                 <div>
-                  <label class="label-brutal">Postal Code</label>
+                  <label class="label-brutal">{{ $t('checkout.postalCode') }}</label>
                   <input 
                     v-model="form.shipping_postal_code"
                     type="text"
@@ -84,29 +81,28 @@
                 </div>
 
                 <div class="md:col-span-2">
-                  <label class="label-brutal">Address *</label>
+                  <label class="label-brutal">{{ $t('checkout.address') }} *</label>
                   <textarea 
                     v-model="form.shipping_address"
                     class="input min-h-[100px]"
-                    placeholder="Enter your full address"
+                    :placeholder="$t('checkout.address')"
                     required
                   ></textarea>
                 </div>
 
                 <div class="md:col-span-2">
-                  <label class="label-brutal">Order Notes (Optional)</label>
+                  <label class="label-brutal">{{ $t('checkout.orderNotes') }}</label>
                   <textarea 
                     v-model="form.notes"
                     class="input min-h-[80px]"
-                    placeholder="Any special instructions..."
+                    :placeholder="locale === 'ar' ? 'أي تعليمات خاصة...' : 'Any special instructions...'"
                   ></textarea>
                 </div>
               </div>
             </div>
 
-            <!-- Payment Method -->
             <div class="section-brutal">
-              <h2 class="section-heading-brutal">💳 PAYMENT METHOD</h2>
+              <h2 class="section-heading-brutal">💳 {{ $t('checkout.paymentMethod').toUpperCase() }}</h2>
               
               <div class="space-y-4">
                 <label class="payment-option-brutal" :class="{ 'selected': form.payment_method === 'cod' }">
@@ -117,8 +113,8 @@
                     class="payment-radio"
                   />
                   <div>
-                    <span class="font-bold">💵 Cash on Delivery (COD)</span>
-                    <p class="text-sm text-[#525252]">Pay when you receive your order</p>
+                    <span class="font-bold">💵 {{ $t('checkout.cod') }}</span>
+                    <p class="text-sm text-[#525252]">{{ $t('checkout.codDescription') }}</p>
                   </div>
                 </label>
 
@@ -130,31 +126,33 @@
                     class="payment-radio"
                   />
                   <div>
-                    <span class="font-bold">💳 Online Payment (CIB/EDAHABIA)</span>
-                    <p class="text-sm text-[#525252]">Pay securely with your card via Chargily</p>
+                    <span class="font-bold">💳 {{ $t('checkout.onlinePayment') }}</span>
+                    <p class="text-sm text-[#525252]">{{ $t('checkout.onlinePaymentDescription') }}</p>
                   </div>
                 </label>
               </div>
             </div>
 
-            <!-- Submit button (mobile) -->
+            <!-- Turnstile Bot Protection -->
+            <div class="section-brutal">
+              <NuxtTurnstile v-model="turnstileToken" />
+            </div>
+
             <button 
               type="submit"
-              :disabled="isSubmitting"
+              :disabled="isSubmitting || !turnstileToken"
               class="lg:hidden btn btn-primary w-full text-lg py-4"
             >
-              <span v-if="isSubmitting">Processing...</span>
-              <span v-else>Place Order - {{ formatPrice(cartStore.totalPrice) }} DA</span>
+              <span v-if="isSubmitting">{{ $t('common.loading') }}</span>
+              <span v-else>{{ $t('checkout.placeOrder') }} - {{ formatPrice(cartStore.totalPrice) }} {{ $t('common.currency') }}</span>
             </button>
           </form>
         </div>
 
-        <!-- Order Summary -->
         <div class="lg:col-span-1">
           <div class="summary-brutal sticky top-28">
-            <h2 class="section-heading-brutal">📋 ORDER SUMMARY</h2>
+            <h2 class="section-heading-brutal">📋 {{ $t('checkout.orderSummary').toUpperCase() }}</h2>
 
-            <!-- Items -->
             <div class="space-y-4 mb-6">
               <div 
                 v-for="item in cartStore.items" 
@@ -171,43 +169,42 @@
                   <span v-else class="text-2xl">📦</span>
                 </div>
                 <div class="flex-grow min-w-0">
-                  <h4 class="font-bold truncate">{{ item.name }}</h4>
+                  <h4 class="font-bold truncate text-[#1a1a1a]">{{ item.name }}</h4>
                   <p v-if="item.variant" class="text-sm text-[#525252]">{{ item.variant }}</p>
-                  <p class="text-sm">Qty: {{ item.quantity }}</p>
+                  <p class="text-sm text-[#525252]">{{ $t('checkout.qty') }}: {{ item.quantity }}</p>
                 </div>
                 <div class="text-right">
-                  <span class="font-bold font-mono">{{ formatPrice(item.price * item.quantity) }} DA</span>
+                  <span class="font-bold font-mono text-[#1a1a1a]">{{ formatPrice(item.price * item.quantity) }} {{ $t('common.currency') }}</span>
                 </div>
               </div>
             </div>
 
             <div class="summary-totals">
               <div class="flex justify-between text-[#525252]">
-                <span>Subtotal</span>
-                <span>{{ formatPrice(cartStore.totalPrice) }} DA</span>
+                <span>{{ $t('cart.subtotal') }}</span>
+                <span>{{ formatPrice(cartStore.totalPrice) }} {{ $t('common.currency') }}</span>
               </div>
               <div class="flex justify-between text-[#525252]">
-                <span>Shipping</span>
-                <span class="text-green-600 font-bold">FREE</span>
+                <span>{{ locale === 'ar' ? 'الشحن' : 'Shipping' }}</span>
+                <span class="text-green-600 font-bold">{{ locale === 'ar' ? 'مجاني' : 'FREE' }}</span>
               </div>
               <div class="flex justify-between text-xl font-bold pt-3 border-t-3 border-[#1a1a1a]">
-                <span>TOTAL</span>
-                <span class="text-[#ff5c00] font-mono">{{ formatPrice(cartStore.totalPrice) }} DA</span>
+                <span>{{ $t('checkout.total').toUpperCase() }}</span>
+                <span class="text-[#ff5c00] font-mono">{{ formatPrice(cartStore.totalPrice) }} {{ $t('common.currency') }}</span>
               </div>
             </div>
 
-            <!-- Submit button (desktop) -->
             <button 
               @click="placeOrder"
-              :disabled="isSubmitting"
+              :disabled="isSubmitting || !turnstileToken"
               class="hidden lg:block btn btn-primary w-full text-lg py-4 mt-6"
             >
-              <span v-if="isSubmitting">Processing...</span>
-              <span v-else>Place Order →</span>
+              <span v-if="isSubmitting">{{ $t('common.loading') }}</span>
+              <span v-else>{{ $t('checkout.placeOrder') }} →</span>
             </button>
 
             <p class="text-sm text-[#525252] text-center mt-4">
-              By placing your order, you agree to our Terms of Service
+              {{ $t('checkout.termsAgreement') }}
             </p>
           </div>
         </div>
@@ -225,9 +222,11 @@ const router = useRouter()
 const route = useRoute()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
+const { locale, t } = useI18n()
 
 const isSubmitting = ref(false)
 const error = ref('')
+const turnstileToken = ref('')
 
 const form = reactive({
   shipping_name: authStore.user?.name || '',
@@ -240,7 +239,6 @@ const form = reactive({
   payment_method: 'cod',
 })
 
-// Algeria wilayas
 const wilayas = [
   'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Batna', 'Béjaïa', 'Biskra', 'Béchar',
   'Blida', 'Bouira', 'Tamanrasset', 'Tébessa', 'Tlemcen', 'Tiaret', 'Tizi Ouzou', 'Alger',
@@ -253,14 +251,12 @@ const wilayas = [
 ]
 
 const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('fr-DZ').format(price)
+  return new Intl.NumberFormat(locale.value === 'ar' ? 'ar-DZ' : 'fr-DZ').format(price)
 }
 
 const placeOrder = async () => {
-  console.log('placeOrder called', { isEmpty: cartStore.isEmpty, items: cartStore.items })
-  
   if (cartStore.isEmpty) {
-    error.value = 'Your cart is empty. Please add items before checkout.'
+    error.value = t('checkout.emptyCartError')
     return
   }
 
@@ -273,8 +269,6 @@ const placeOrder = async () => {
       variant_id: item.variantId,
       quantity: item.quantity,
     }))
-
-    console.log('Sending order:', { items, form })
 
     const endpoint = authStore.isAuthenticated 
       ? `${config.public.apiBase}/checkout`
@@ -294,27 +288,21 @@ const placeOrder = async () => {
       },
     })
 
-    console.log('Order response:', response)
-
-    // If Chargily payment, redirect to checkout URL
     if (response.checkout_url) {
       window.location.href = response.checkout_url
       return
     }
 
-    // Clear cart and redirect to success
     cartStore.clearCart()
     router.push(`/order-success?order=${response.data.order_number}`)
 
   } catch (err: any) {
-    console.error('Order error:', err)
-    error.value = err.data?.message || err.message || 'Failed to place order. Please try again.'
+    error.value = err.data?.message || err.message || t('common.error')
   } finally {
     isSubmitting.value = false
   }
 }
 
-// Pre-fill form if user is logged in
 watch(() => authStore.user, (user) => {
   if (user) {
     form.shipping_name = user.name || form.shipping_name
@@ -325,10 +313,9 @@ watch(() => authStore.user, (user) => {
   }
 }, { immediate: true })
 
-// SEO
 useSeoMeta({
-  title: 'Checkout - VIBE',
-  description: 'Complete your order',
+  title: () => `${t('checkout.title')} - VIBE`,
+  description: () => t('checkout.title'),
 })
 </script>
 
